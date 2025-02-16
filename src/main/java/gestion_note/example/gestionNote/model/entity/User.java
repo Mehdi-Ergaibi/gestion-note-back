@@ -38,6 +38,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Student student;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Prof prof;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),

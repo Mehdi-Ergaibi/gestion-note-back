@@ -3,6 +3,7 @@ package gestion_note.example.gestionNote.model.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+
 import gestion_note.example.gestionNote.model.enumEntities.Semestre;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -11,6 +12,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -39,4 +43,12 @@ public class Filiere {
 
     @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Student> students = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "filiere_professors",
+        joinColumns = @JoinColumn(name = "filiere_id"),
+        inverseJoinColumns = @JoinColumn(name = "professor_id")
+    )
+    private Set<Prof> professors = new HashSet<>();
 }

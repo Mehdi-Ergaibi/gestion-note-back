@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gestion_note.example.gestionNote.dto.RegistrationRequest;
 import gestion_note.example.gestionNote.model.entity.Filiere;
+import gestion_note.example.gestionNote.model.entity.Prof;
 import gestion_note.example.gestionNote.model.entity.Role;
 import gestion_note.example.gestionNote.model.entity.Student;
 import gestion_note.example.gestionNote.model.entity.User;
 import gestion_note.example.gestionNote.model.enumEntities.ERole;
 import gestion_note.example.gestionNote.model.enumEntities.Semestre;
 import gestion_note.example.gestionNote.repositories.FiliereRepository;
+import gestion_note.example.gestionNote.repositories.ProfRepository;
 import gestion_note.example.gestionNote.repositories.RoleRepository;
 import gestion_note.example.gestionNote.repositories.StudentRepository;
 import gestion_note.example.gestionNote.repositories.UserRepository;
@@ -45,6 +47,9 @@ public class AdminController {
 
     @Autowired
     FiliereRepository filiereRepository;
+
+    @Autowired
+    ProfRepository profRepository;
 
     @PostMapping("/add-user")
     public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
@@ -72,7 +77,22 @@ public class AdminController {
             student.setSemestre(Semestre.valueOf(request.getSemestre())); 
             studentRepository.save(student);
         }
+        if (userRole.getName() == ERole.PROFESSEUR) {
+                Prof prof = new Prof();
+                prof.setUser(user);
+                prof.setChef(request.isChef());
 
+                if(request.isChef()) {
+                    Role role = roleRepository.findByName(ERole.COORDONNATEUR).get();
+                    prof.getUser().addRole(role);
+                }
+                
+                Set<Filiere> filieres = filiereRepository.findAllById(request.getFiliereIds())
+                .stream()
+                .collect(Collectors.toSet());
+                prof.setFilieres(filieres);
+                profRepository.save(prof);
+            }
         return ResponseEntity.ok("User registered successfully!");
     }
 
@@ -130,6 +150,27 @@ public class AdminController {
             }
 
             studentRepository.save(student);
+        }
+
+        // ila can prof
+        boolean isProf = user.getRoles().stream().anyMatch(role -> role.getName() == ERole.PROFESSEUR);
+        if (isProf) {
+            Prof prof = profRepository.findByUser(user)
+                    .orElseThrow(() -> new RuntimeException("Professor not found"));
+
+            prof.setChef(updatedUser.getProf().isChef());
+
+            if (updatedUser.getProf().isChef()) {
+                Role role = roleRepository.findByName(ERole.COORDONNATEUR).get();
+                user.addRole(role); // Add the role to the user
+            }
+
+            Set<Filiere> filieres = filiereRepository.findAllById(updatedUser.getProf().getFiliereIds())
+                    .stream()
+                    .collect(Collectors.toSet());
+            prof.setFilieres(filieres);
+
+            profRepository.save(prof);
         }
 
         return ResponseEntity.ok("User updated successfully");
