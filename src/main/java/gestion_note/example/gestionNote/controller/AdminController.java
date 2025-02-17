@@ -1,5 +1,7 @@
 package gestion_note.example.gestionNote.controller;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -93,8 +96,8 @@ public class AdminController {
                 prof.setFilieres(filieres);
                 profRepository.save(prof);
             }
-        return ResponseEntity.ok("User registered successfully!");
-    }
+            return ResponseEntity.ok(Collections.singletonMap("message", "User registered successfully!"));
+        }
 
     @PostMapping("/assign-role")
     public ResponseEntity<?> assignRole(@RequestParam String email, @RequestParam ERole roleName) {
@@ -184,6 +187,46 @@ public class AdminController {
         userRepository.delete(user);
 
         return ResponseEntity.ok("User deleted successfully");
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers(){
+        return ResponseEntity.ok(userRepository.findAll());
+    }
+
+    @GetMapping("/admins")
+    public ResponseEntity<List<User>> getAllAdmins() {
+        return ResponseEntity.ok(userRepository.findByRole(ERole.ADMIN_APP));
+    }
+
+    @GetMapping("/coordinateurs")
+    public ResponseEntity<List<User>> getAllCoordinateurs() {
+        return ResponseEntity.ok(userRepository.findByRole(ERole.COORDONNATEUR));
+    }
+
+    @GetMapping("/profs")
+    public ResponseEntity<List<User>> getAllProfs() {
+        return ResponseEntity.ok(userRepository.findByRole(ERole.PROFESSEUR));
+    }
+
+    @GetMapping("/students")
+    public ResponseEntity<List<User>> getAllStudents() {
+        return ResponseEntity.ok(userRepository.findByRole(ERole.ETUDIANT));
+    }
+
+    @GetMapping("/admins-absence")
+    public ResponseEntity<List<User>> getAllAdminsAbsence() {
+        return ResponseEntity.ok(userRepository.findByRole(ERole.ADMIN_ABSENCE));
+    }
+
+    @GetMapping("/secretaires")
+    public ResponseEntity<List<User>> getAllSecretaires() {
+        return ResponseEntity.ok(userRepository.findByRole(ERole.SECRETAIRE_GENERAL));
+    }
+
+    @GetMapping("/chefs-scolarite")
+    public ResponseEntity<List<User>> getAllChefsScolarite() {
+        return ResponseEntity.ok(userRepository.findByRole(ERole.CHEF_SCOLARITE));
     }
 
 }

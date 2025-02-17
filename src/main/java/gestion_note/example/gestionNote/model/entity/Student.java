@@ -3,6 +3,8 @@ package gestion_note.example.gestionNote.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import gestion_note.example.gestionNote.model.enumEntities.Semestre;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +34,7 @@ public class Student {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false, unique = true)
@@ -39,6 +42,7 @@ public class Student {
 
     @ManyToOne
     @JoinColumn(name = "filiere_id")
+    @JsonBackReference
     private Filiere filiere;
 
     @Enumerated(EnumType.STRING)
@@ -51,5 +55,6 @@ public class Student {
         joinColumns = @JoinColumn(name = "student_id"),
         inverseJoinColumns = @JoinColumn(name = "module_id")
     )
+    @JsonBackReference
     private List<Module> modules = new ArrayList<>();
 }

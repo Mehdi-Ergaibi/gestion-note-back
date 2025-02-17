@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import gestion_note.example.gestionNote.model.enumEntities.Semestre;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,7 @@ public class Prof {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ElementCollection(targetClass = Semestre.class)
@@ -37,6 +40,7 @@ public class Prof {
         joinColumns = @JoinColumn(name = "professor_id"),
         inverseJoinColumns = @JoinColumn(name = "filiere_id")
     )
+    @JsonBackReference
     private Set<Filiere> filieres = new HashSet<>();
 
     @ManyToMany
@@ -45,6 +49,7 @@ public class Prof {
         joinColumns = @JoinColumn(name = "professor_id"),
         inverseJoinColumns = @JoinColumn(name = "element_id")
     )
+    @JsonBackReference
     private List<Element> elements = new ArrayList<>();
 
     private boolean isChef;  // ila kan prof chef de filiere true
@@ -55,6 +60,7 @@ public class Prof {
         joinColumns = @JoinColumn(name = "professor_id"),
         inverseJoinColumns = @JoinColumn(name = "filiere_id")
     )
+    @JsonBackReference
     private List<Filiere> filieresCord = new ArrayList<>(); // les filieres li hoa chef eihom
 
 

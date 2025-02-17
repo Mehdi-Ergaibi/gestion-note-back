@@ -3,6 +3,7 @@ package gestion_note.example.gestionNote.model.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import gestion_note.example.gestionNote.model.enumEntities.Semestre;
 import jakarta.persistence.CascadeType;
@@ -39,6 +40,7 @@ public class Filiere {
     private Semestre semestre;
 
     @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private Set<Module> modules = new HashSet<>();
 
     @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,5 +52,6 @@ public class Filiere {
         joinColumns = @JoinColumn(name = "filiere_id"),
         inverseJoinColumns = @JoinColumn(name = "professor_id")
     )
+    @JsonBackReference
     private Set<Prof> professors = new HashSet<>();
 }

@@ -1,5 +1,7 @@
 package gestion_note.example.gestionNote.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,5 +27,6 @@ public class Element {
 
     @ManyToOne
     @JoinColumn(name = "module_id", nullable = false)
+    @JsonBackReference
     private Module module;
 }

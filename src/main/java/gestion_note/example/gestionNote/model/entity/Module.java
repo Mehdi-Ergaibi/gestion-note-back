@@ -6,6 +6,8 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import gestion_note.example.gestionNote.model.enumEntities.Semestre;
 
 @Entity
@@ -24,6 +26,7 @@ public class Module {
 
     @ManyToOne
     @JoinColumn(name = "filiere_id", nullable = false)
+    @JsonBackReference
     private Filiere filiere;
 
     @Enumerated(EnumType.STRING)
@@ -31,5 +34,6 @@ public class Module {
     private Semestre semestre;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private Set<Element> elements = new HashSet<>();
 }
