@@ -34,7 +34,7 @@ public class Student {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference("studentReference")
     private User user;
 
     @Column(nullable = false, unique = true)

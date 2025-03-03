@@ -1,5 +1,7 @@
 package gestion_note.example.gestionNote.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,18 +28,18 @@ public class ConfigurationController {
     @PutMapping("/normal-exam")
     public ResponseEntity<?> updateNormalExamGradeEntry(@RequestParam boolean enabled) {
         configurationService.updateNormalExamGradeEntry(enabled);
-        return ResponseEntity.ok("Normal exam grade entry status updated");
+        return ResponseEntity.ok(Map.of("message", "Normal exam grade entry status updated"));
     }
 
     @PutMapping("/ratt-exam")
     public ResponseEntity<?> updateRetakeExamGradeEntry(@RequestParam boolean enabled) {
         configurationService.updateRattExamGradeEntry(enabled);
-        return ResponseEntity.ok("ratt exam grade entry status updated");
+        return ResponseEntity.ok(Map.of("message", "Rattrapage exam grade entry status updated"));
     }
 
     @PutMapping("/student-notes")
     public ResponseEntity<?> updateStudentEnabling(@RequestParam boolean enabled) {
         configurationService.updateStudentGradeDisplayed(enabled);
-        return ResponseEntity.ok("ratt exam grade entry status updated");
+        return ResponseEntity.ok(Map.of("message", "Student notes visibility updated"));
     }
 }

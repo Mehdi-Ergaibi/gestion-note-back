@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gestion_note.example.gestionNote.dto.RegistrationRequest;
+import gestion_note.example.gestionNote.dto.UserUpdateRequest;
 import gestion_note.example.gestionNote.model.entity.Filiere;
 import gestion_note.example.gestionNote.model.entity.Prof;
 import gestion_note.example.gestionNote.model.entity.Role;
@@ -114,7 +116,7 @@ public class AdminController {
     }
 
     @PostMapping("/update-user")
-    public ResponseEntity<?> updateUser(@RequestBody User updatedUser) {
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequest updatedUser) {
         User user = userRepository.findByEmail(updatedUser.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -126,15 +128,15 @@ public class AdminController {
             user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
 
-        if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+        if (updatedUser.getRoles() != null) {
             Set<Role> updatedRoles = updatedUser.getRoles().stream()
-                    .map(role -> roleRepository.findByName(role.getName())
-                            .orElseThrow(() -> new RuntimeException("Role not found: " + role.getName())))
-                    .collect(Collectors.toSet());
-
+                .map(roleName -> roleRepository.findByName(ERole.valueOf(roleName))
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                .collect(Collectors.toSet());
+        
             user.setRoles(updatedRoles);
         }
-
+        
         userRepository.save(user);
 
         // ila kan user rah student updati dakchi li zayen end student
@@ -146,11 +148,12 @@ public class AdminController {
             student.setCne(updatedUser.getStudent().getCne());
             student.setSemestre(updatedUser.getStudent().getSemestre());
 
-            if (updatedUser.getStudent().getFiliere() != null) {
-                Filiere filiere = filiereRepository.findById(updatedUser.getStudent().getFiliere().getId())
+            if (updatedUser.getStudent().getFiliereId() != null) {
+                Filiere filiere = filiereRepository.findById(updatedUser.getStudent().getFiliereId())
                         .orElseThrow(() -> new RuntimeException("Filiere not found"));
                 student.setFiliere(filiere);
             }
+            
 
             studentRepository.save(student);
         }
@@ -158,35 +161,43 @@ public class AdminController {
         // ila can prof
         boolean isProf = user.getRoles().stream().anyMatch(role -> role.getName() == ERole.PROFESSEUR);
         if (isProf) {
-            Prof prof = profRepository.findByUser(user)
+            User u = userRepository.findByEmail(user.getEmail())
                     .orElseThrow(() -> new RuntimeException("Professor not found"));
 
-            prof.setChef(updatedUser.getProf().isChef());
 
-            if (updatedUser.getProf().isChef()) {
-                Role role = roleRepository.findByName(ERole.COORDONNATEUR).get();
-                user.addRole(role); // Add the role to the user
-            }
+            if (updatedUser.getProf() != null) { // chuf baeda yakma null
+                u.getProf().setChef(updatedUser.getProf().isChef());
 
-            Set<Filiere> filieres = filiereRepository.findAllById(updatedUser.getProf().getFiliereIds())
+                if (updatedUser.getProf().isChef()) {
+                    Role role = roleRepository.findByName(ERole.COORDONNATEUR).get();
+                    u.addRole(role); // Add the role to the user
+                }
+
+                Set<Filiere> filieres = filiereRepository.findAllById(updatedUser.getProf().getFiliereIds())
                     .stream()
                     .collect(Collectors.toSet());
-            prof.setFilieres(filieres);
+                    u.getProf().setFilieres(filieres);
 
-            profRepository.save(prof);
+            }else {
+                throw new RuntimeException("ProfDTO feha chi defaut");
+            }
+
+
+            userRepository.save(u);
         }
-
-        return ResponseEntity.ok("User updated successfully");
+        /* System.out.println(updatedUser.getRoles());
+        System.out.println(updatedUser.getProf().isChef()); */
+        return ResponseEntity.ok(Collections.singletonMap("message", "User updated successfully"));
     }
 
-    @DeleteMapping("/delete-user")
-    public ResponseEntity<?> deleteUser(@RequestParam String email) {
+    @DeleteMapping("/delete-user/{email}")
+    public ResponseEntity<?> deleteUser(@PathVariable String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         userRepository.delete(user);
 
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok(Collections.singletonMap("message", "User deleted successfully"));
     }
 
     @GetMapping("/users")

@@ -25,7 +25,7 @@ public class Prof {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference("profReference")
     private User user;
 
     @ElementCollection(targetClass = Semestre.class)

@@ -12,5 +12,4 @@ import gestion_note.example.gestionNote.model.entity.User;
 @Repository
 public interface ProfRepository extends JpaRepository<Prof, Long> {
     Optional<Prof> findByUser(User user);
-
 }
