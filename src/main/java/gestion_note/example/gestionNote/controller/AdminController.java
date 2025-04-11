@@ -240,4 +240,6 @@ public class AdminController {
         return ResponseEntity.ok(userRepository.findByRole(ERole.CHEF_SCOLARITE));
     }
 
+
+
 }

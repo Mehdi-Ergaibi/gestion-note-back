@@ -1,6 +1,6 @@
 package gestion_note.example.gestionNote.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +27,6 @@ public class Element {
 
     @ManyToOne
     @JoinColumn(name = "module_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private Module module;
 }

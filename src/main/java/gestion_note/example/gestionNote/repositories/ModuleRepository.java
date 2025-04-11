@@ -6,4 +6,5 @@ import gestion_note.example.gestionNote.model.entity.Module;
 
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, Long> {
+    void deleteByFiliereId(Long filiereId);
 }

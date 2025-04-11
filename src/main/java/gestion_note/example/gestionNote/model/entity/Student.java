@@ -3,7 +3,7 @@ package gestion_note.example.gestionNote.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gestion_note.example.gestionNote.model.enumEntities.Semestre;
 import jakarta.persistence.Column;
@@ -19,14 +19,16 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "students")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Student {
     @Id
     private Long id;
@@ -34,7 +36,7 @@ public class Student {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
-    @JsonBackReference("studentReference")
+    @JsonIgnore
     private User user;
 
     @Column(nullable = false, unique = true)
@@ -42,7 +44,7 @@ public class Student {
 
     @ManyToOne
     @JoinColumn(name = "filiere_id")
-    @JsonBackReference
+    @JsonIgnore
     private Filiere filiere;
 
     @Enumerated(EnumType.STRING)
@@ -50,11 +52,7 @@ public class Student {
     private Semestre semestre;
 
     @ManyToMany
-    @JoinTable(
-        name = "student_modules",
-        joinColumns = @JoinColumn(name = "student_id"),
-        inverseJoinColumns = @JoinColumn(name = "module_id")
-    )
-    @JsonBackReference
+    @JoinTable(name = "student_modules", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "module_id"))
+    @JsonIgnore
     private List<Module> modules = new ArrayList<>();
 }
